@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Tema2PS</title>
+    <link rel="stylesheet" href="button_style.css">
+</head>
+<body style="display: flex; justify-content: center; flex-direction: column; height: 800px; align-items: center">
+
+    <h1>Statistics</h1>
+    <table style="font-size: 25px">
+        <thead>
+        <tr>
+            <th>Dish</th>
+            <th>Numbers of appearance</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="entry : ${statistics}">
+            <td th:text="${entry.key}"></td>
+            <td th:text="${entry.value}"></td>
+        </tr>
+        </tbody>
+    </table>
+</body>
+</html>

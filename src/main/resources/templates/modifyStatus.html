@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Tema2PS</title>
+    <link rel="stylesheet" href="button_style.css">
+</head>
+<body style="display: flex; justify-content: center;flex-direction: column; align-items: center; height: 800px; align-items: center">
+<h1 style="font-size: 30px;">Modify order</h1>
+    <table style="font-size: 25px;">
+        <tr>
+            <td>Order:</td>
+            <td><select id="selectedOrder">
+                <option th:each="order : ${orders}" th:value="${order.id}" th:text="${order.id}"></option>
+            </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Status:</td>
+            <td><select id="selectedStatus">
+                <option value="New">New</option>
+                <option value="InProgress">InProgress</option>
+                <option value="Done">Done</option>
+            </select>
+            </td>
+    </table>
+    <button class="my_button" id="modify" type="button">Modify status</button>
+    <script>
+        document.getElementById("modify").addEventListener("click", function() {
+            const selectedOrder = parseInt(document.getElementById("selectedOrder").options[document.getElementById("selectedOrder").selectedIndex].value);
+            const selectedStatus = document.getElementById("selectedStatus").options[document.getElementById("selectedStatus").selectedIndex].text;
+
+            const order = {
+                id: selectedOrder,
+                status: selectedStatus
+            };
+            fetch("/modifyStatus", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(order)
+            }).then(function() {
+                console.log(order);
+                alert("Status modified successfully!");
+                window.location.href = "/user";
+            });
+        });
+    </script>
+</body>
+</html>

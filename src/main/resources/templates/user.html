@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Tema2PS</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="button_style.css">
+</head>
+<body style="display: flex; justify-content: center;flex-direction: column; align-items: center">
+    <h1 style="font-size: 60px;">Orders</h1>
+    <table style="font-size: 25px;">
+        <tr>
+            <th>Id</th>
+            <th>List of dishes</th>
+            <th>Status</th>
+            <th>Cost</th>
+            <th>time</th>
+            <th>date</th>
+        </tr>
+        <tr th:each="order : ${orders}">
+            <td th:text="${order.id}"></td>
+            <td th:text="${order.dishList}"></td>
+            <td th:text="${order.status}"></td>
+            <td th:text="${order.totalCost}"></td>
+            <td th:text="${order.time}"></td>
+            <td th:text="${order.date}"></td>
+        </tr>
+    </table>
+    <div style="display: flex; flex-direction: row">
+        <button class="my_button" onclick="window.location.href='/addOrder'">Add order</button>
+        <button class="my_button" onclick="window.location.href='/modifyStatus'">Modify status</button>
+    </div>
+    </body>
+</html>

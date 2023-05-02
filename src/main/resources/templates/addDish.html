@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Tema2PS</title>
+    <link rel="stylesheet" href="button_style.css">
+</head>
+<body style="display: flex; justify-content: center; flex-direction: column; height: 800px; align-items: center">
+    <h1>Create dish</h1>
+        <table style="font-size: 20px">
+            <tr>
+                <td>Name</td>
+                <td><input id = "dishName" type="text"/></td>
+            </tr>
+            <tr>
+                <td>Price</td>
+                <td><input id = "dishPrice" type="text"/></td>
+            </tr>
+            <tr>
+                <td>Quantity</td>
+                <td><input id = "dishQuantity" type="text"/></td>
+            </tr>
+        </table>
+        <button class="my_button" onclick="addDish()">Add dish</button>
+        <script>
+            function addDish() {
+                const dishName = document.getElementById("dishName").value;
+                const dishPrice = document.getElementById("dishPrice").value;
+                const dishQuantity = document.getElementById("dishQuantity").value;
+                const dish = {
+                    name: dishName,
+                    price: dishPrice,
+                    stock: dishQuantity
+                };
+                if(dishName === "" || dishPrice === "" || dishQuantity === "") {
+                    alert("Please fill all the fields!");
+                    return;
+                }
+                if(isNaN(dishPrice)) {
+                    alert("Price must be a number!");
+                    return;
+                }
+                if(isNaN(dishQuantity)) {
+                    alert("Quantity must be a number!");
+                    return;
+                }
+                fetch("/addDish", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(dish)
+                }).then(function() {
+                    alert("Dish added successfully!");
+                    window.location.href = "/admin";
+                });
+            }
+        </script>
+</body>
+</html>

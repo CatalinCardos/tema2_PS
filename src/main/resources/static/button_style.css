@@ -1,0 +1,9 @@
+.my_button {
+    margin-left: 5px;
+    margin-right: 5px;
+    align-items: center;
+    width: 120px;
+    height: 40px;
+    background: linear-gradient(90.9deg, #A8E910 4.37%, #1C7227 114.07%);
+    border-radius: 12.2111px;
+}

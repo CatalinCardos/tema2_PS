@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Tema2PS</title>
+    <link rel="stylesheet" href="button_style.css">
+</head>
+<body style="display: flex; justify-content: center; flex-direction: column; height: 800px; align-items: center">
+<h1>Delete dish</h1>
+    <table style="font-size: 25px">
+        <tr>
+            <td>Name</td>
+            <td><select id="dishName">
+                <option th:each="dish : ${dishes}" th:value="${dish.name}" th:text="${dish.name}">Dish</option>
+            </select>
+            </td>
+        </tr>
+    </table>
+    <button class="my_button" onclick="deleteDish()">Delete dish</button>
+    <script>
+        function deleteDish() {
+            const dishName = document.getElementById("dishName").value;
+            if(dishName === "") {
+                alert("Please fill all the fields!");
+                return;
+            }
+            fetch("/deleteDish", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(dishName)
+            }).then(function() {
+                alert("Dish deleted successfully!");
+                window.location.href = "/admin";
+            });
+        }
+    </script>
+</body>
+</html>

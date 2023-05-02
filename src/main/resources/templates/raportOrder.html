@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Tema2PS</title>
+    <link rel="stylesheet" href="button_style.css">
+</head>
+<body style="display: flex; justify-content: center; flex-direction: column; height: 800px; align-items: center">
+
+    <h1>Raport orders</h1>
+    <table style="font-size: 25px;">
+        <tr>
+            <th>Id</th>
+            <th>List of dishes</th>
+            <th>Status</th>
+            <th>Cost</th>
+            <th>time</th>
+            <th>date</th>
+        </tr>
+        <tr th:each="order : ${orders}">
+            <td th:text="${order.id}"></td>
+            <td th:text="${order.dishList}"></td>
+            <td th:text="${order.status}"></td>
+            <td th:text="${order.totalCost}"></td>
+            <td th:text="${order.time}"></td>
+            <td th:text="${order.date}"></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>Start date</td>
+            <td><input id="startDate" type="date"></td>
+        </tr>
+        <tr>
+            <td>End date</td>
+            <td><input id="endDate" type="date"></td>
+        </tr>
+    </table>
+    <button class="my_button" onclick="raportOrder()">Raport order</button>
+    <script>
+        function raportOrder() {
+            const dateStart = document.getElementById("startDate").value;
+            const dateFinal = document.getElementById("endDate").value;
+            if(dateStart === "" || dateFinal === "") {
+                alert("Please fill all the fields!");
+                return;
+            }
+            const url = "/raportOrder?dateStart=" + encodeURIComponent(dateStart) + "&dateFinal=" + encodeURIComponent(dateFinal);
+            fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const newTable = parser.parseFromString(html, 'text/html').querySelector('table');
+                    const oldTable = document.querySelector('table');
+                    oldTable.parentNode.replaceChild(newTable, oldTable);
+                });
+        }
+
+    </script>
+
+</body>
+</html>

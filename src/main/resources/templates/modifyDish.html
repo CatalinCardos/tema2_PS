@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Tema2PS</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="button_style.css">
+</head>
+<body style="display: flex; justify-content: center;flex-direction: column; align-items: center; height: 800px; align-items: center;">
+    <h1>Modify dish</h1>
+    <select style="font-size: 25px" id="dishNameSelected">
+        <option th:each="dish : ${dishes}" th:value="${dish.name}" th:text="${dish.name}">Dish</option>
+    </select>
+    <button class="my_button" style="margin-top: 10px" onclick="getDish()">Get dish</button>
+    <label style="display: flex; flex-direction: column;">
+        <table style="font-size: 25px">
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Stock</th>
+            </tr>
+            <tr>
+                <td>
+                <input style="margin-top: 10px" id="dishName" type="text" th:placeholder="${dishSelected?.name}" >
+                </td>
+                <td>
+                    <input style="margin-top: 10px" id="dishPrice" type="text" th:placeholder="${dishSelected?.price}">
+                </td>
+                <td>
+                    <input style="margin-top: 10px" id="dishStock" type="text" th:placeholder="${dishSelected?.stock}">
+                </td>
+            </tr>
+        </table>
+    </label>
+    <button class="my_button" style="margin-top: 10px" onclick="modifyDish()">Modify dish</button>
+    <script>
+        function getDish() {
+            const dishNameSelected = document.getElementById("dishNameSelected").value;
+            if(dishNameSelected === "") {
+                alert("Please fill all the fields!");
+                return;
+            }
+            const url = "/modifyDish?name=" + encodeURIComponent(dishNameSelected);
+            fetch(url,{
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })  .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const newTable = parser.parseFromString(html, 'text/html').querySelector('label');
+                    const oldTable = document.querySelector('label');
+                    oldTable.parentNode.replaceChild(newTable, oldTable);
+                });
+        }
+
+        function modifyDish() {
+            let dishName = document.getElementById("dishName").value;
+            let dishPrice = document.getElementById("dishPrice").value;
+            let dishStock = document.getElementById("dishStock").value;
+            //put placeholder if input is empty
+            if(dishName === "") {
+                dishName = document.getElementById("dishName").placeholder;
+            }
+            if(dishPrice === "") {
+                dishPrice = document.getElementById("dishPrice").placeholder;
+            }
+            if(dishStock === "") {
+                dishStock = document.getElementById("dishStock").placeholder;
+            }
+            //check dish price is a number
+            if(isNaN(dishPrice)) {
+                alert("Dish price must be a number!");
+                return;
+            }
+            //check dish stock is a number
+            if(isNaN(dishStock)) {
+                alert("Dish stock must be a number!");
+                return;
+            }
+            fetch("/modifyDish",{
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: dishName,
+                    price: dishPrice,
+                    stock: dishStock
+                })
+            })  .then(function() {
+                alert("Dish modified successfully!");
+                window.location.href = "/admin";
+            });
+        }
+    </script>
+</body>
+</html>

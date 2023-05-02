@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Tema2PS</title>
+    <link rel="stylesheet" href="button_style.css">
+</head>
+<body style="display: flex; justify-content: center; flex-direction: column; height: 800px; align-items: center">
+    <h1>Create user</h1>
+    <table style="font-size: 25px">
+        <tr>
+            <td>Name</td>
+            <td><input id="name" type="text" /></td>
+        </tr>
+        <tr>
+            <td>Username</td>
+            <td><input id="username" type="text" /></td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td><input id="password" type="password" /></td>
+        </tr>
+        <tr>
+            <td>Role</td>
+            <td><select id="role">
+                <option value="admin">ADMIN</option>
+                <option value="user">USER</option>
+            </select>
+            </td>
+        </tr>
+    </table>
+    <button class="my_button" onclick="createUser()">Create user</button>
+    <script>
+        function createUser() {
+            const name = document.getElementById("name").value;
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const role = document.getElementById("role").value;
+            if(username === "" || password === "" || name === "") {
+                alert("Please fill all the fields!");
+                return;
+            }
+            fetch("/createUser", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: name,
+                    username: username,
+                    password: password,
+                    role: role
+                })
+            }).then(function() {
+                alert("User created successfully!");
+                window.location.href = "/admin";
+            });
+        }
+    </script>
+</body>
+</html>

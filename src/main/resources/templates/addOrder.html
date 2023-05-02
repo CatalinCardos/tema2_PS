@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Tema2PS</title>
+    <link rel="stylesheet" href="button_style.css">
+</head>
+<body style="display: flex; justify-content: center;flex-direction: column; align-items: center; height: 800px; align-items: center; font-size: 20px">
+    <h1 style="font-size: 30px">Add Orders</h1>
+        <table>
+            <tr>
+                <td>Dishes</td>
+                <td><select id="selectedDish">
+                    <option th:each="dish : ${dishes}" th:value="${dish.price}" th:text="${dish.name}"></option>
+                </select>
+                </td>
+                <ul id="selected-dishes"></ul>
+                <td> <button class="my_button" id="addDish" type="button">Add dish</button></td>
+                </td>
+            </tr>
+            <tr>
+                <td>Cost</td>
+                <td><input id="cost" type="text" readonly/></td>
+            </tr>
+        </table>
+        <button  class="my_button" id="addOrder" type="button">Add order</button>
+    <script>
+        const selectedDishes = [];
+        const selectedDishesList = document.getElementById("selected-dishes");
+        const costInput = document.getElementById("cost");
+        let cost = 0;
+
+        document.getElementById("addDish").addEventListener("click", function() {
+            const selectedDish = document.getElementById("selectedDish").options[document.getElementById("selectedDish").selectedIndex].text;
+            const newDishListItem = document.createElement("li");
+            newDishListItem.textContent = selectedDish;
+            selectedDishesList.appendChild(newDishListItem);
+            selectedDishes.push(selectedDish);
+            costInput.value = cost + parseFloat(document.getElementById("selectedDish").value);
+            cost = cost + parseFloat(document.getElementById("selectedDish").value);
+            console.log("Selected dishes:", selectedDishes);
+        });
+
+        document.getElementById("addOrder").addEventListener("click", function() {
+            if(cost === 0) {
+                alert("Please select at least one dish!");
+                return;
+            }
+            fetch("/addOrder", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(selectedDishes)
+            }).then(function() {
+                alert("Order added successfully!");
+                window.location.href = "/user";
+            });
+        });
+    </script>
+
+</body>
+</html>
