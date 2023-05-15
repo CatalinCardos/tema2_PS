@@ -51,6 +51,15 @@ public class OrderController {
         return "raportOrder";
     }
 
+    record OrderToExport(String dateStart, String dateFinal, String type){}
+
+    @PostMapping("/exportFile")
+    @ResponseBody()
+    public void exportFile(@RequestBody OrderToExport orderToExport){
+        orderService.exportOrders(orderToExport.dateStart, orderToExport.dateFinal, orderToExport.type);
+    }
+
+
     @GetMapping("/statisticView")
     public String statistics(Model model){
         model.addAttribute("statistics", orderService.statisticsOrder());

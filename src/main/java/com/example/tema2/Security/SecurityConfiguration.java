@@ -1,18 +1,15 @@
-package com.example.tema2;
+package com.example.tema2.Security;
 
+import com.example.tema2.Utils.MD5PasswordEncoder;
 import com.example.tema2.Service.UserDetailsService;
-import com.example.tema2.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -39,6 +36,7 @@ public class SecurityConfiguration{
                     .requestMatchers("/user").hasAuthority("user")
                     .requestMatchers("/addOrder").hasAuthority("user")
                     .requestMatchers("/modifyStatus").hasAuthority("user")
+                    .requestMatchers("/exportFile").hasAuthority("admin")
                     .requestMatchers("/").permitAll()
                     .anyRequest().authenticated();
                 })
@@ -46,11 +44,12 @@ public class SecurityConfiguration{
                 .headers(headers -> headers.frameOptions().sameOrigin())
                 .httpBasic(withDefaults())
                 .formLogin(withDefaults())
+                .csrf().disable()
                 .build();
     }
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new MD5PasswordEncoder();
     }
 }

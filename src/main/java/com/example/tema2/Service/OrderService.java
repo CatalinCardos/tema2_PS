@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class OrderService {
@@ -84,6 +85,11 @@ public class OrderService {
         }
 
         return statistics;
+    }
+
+    public void exportOrders(String dateStart, String dateFinal, String type){
+        List<OrderFromMenu> orders = raportOrder(Date.valueOf(dateStart), Date.valueOf(dateFinal));
+        Objects.requireNonNull(ExporterFactory.getExporter(type)).export(orders);
     }
 
     public OrderREPO getOrderDAO() {

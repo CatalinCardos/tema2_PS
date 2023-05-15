@@ -37,6 +37,10 @@
         </tr>
     </table>
     <button class="my_button" onclick="raportOrder()">Raport order</button>
+    <div style="margin-top: 20px">
+        <button class="my_button" onclick="exportFile('csv')">Export CSV</button>
+        <button class="my_button" onclick="exportFile('excel')">Export Excel</button>
+    </div>
     <script>
         function raportOrder() {
             const dateStart = document.getElementById("startDate").value;
@@ -59,6 +63,33 @@
                     const oldTable = document.querySelector('table');
                     oldTable.parentNode.replaceChild(newTable, oldTable);
                 });
+        }
+
+        function exportFile(type) {
+            const dateStart = document.getElementById("startDate").value;
+            const dateFinal = document.getElementById("endDate").value;
+            if(dateStart === "" || dateFinal === "") {
+                alert("Please fill all the fields!");
+                return;
+            }
+            orderToExport = {
+                dateStart: dateStart,
+                dateFinal: dateFinal,
+                type: type
+            };
+            console.log(orderToExport);
+            fetch("/exportFile", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(orderToExport)
+            }).then(response => {
+                if(response.status === 200) {
+                    alert("File exported successfully!");
+                } else {
+                    alert("Error exporting file!");
+                }});
         }
 
     </script>
