@@ -8,8 +8,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.sql.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class OrderController {
@@ -28,9 +31,16 @@ public class OrderController {
     }
     @PostMapping("/addOrder")
     public void addOrder(@RequestBody List<String> selectedDishes){
-        orderService.addOrder(selectedDishes);
+        List<OrderFromMenu> orders = orderService.addOrder(selectedDishes);
 
     }
+    @PostMapping("/addPublicOrder")
+    @ResponseBody()
+    public List<String> addPublicOrder(@RequestBody List<String> selectedDishes){
+        List<String> orderFromMenus=  orderService.addOrder(selectedDishes).stream().map(OrderFromMenu::toString).collect(Collectors.toList());
+        return orderFromMenus;
+    }
+
     @PutMapping("/modifyStatus")
     public void changeStatus(@RequestBody Order order){
         orderService.changeStatus(order.id(), order.status());
@@ -51,11 +61,21 @@ public class OrderController {
         return "raportOrder";
     }
 
+    @GetMapping("/getPublicOrders")
+    @ResponseBody()
+    public List<String> raportOrder(@RequestParam(name = "dateStart", required = false, defaultValue = "") String dateStart,
+                              @RequestParam(name = "dateFinal", required = false, defaultValue = "") String dateFinal){
+        Date startDate = Date.valueOf(dateStart);
+        Date finalDate = Date.valueOf(dateFinal);
+        List <OrderFromMenu> orders = orderService.raportOrder(startDate, finalDate);
+        return orders.stream().map(OrderFromMenu::toString).collect(Collectors.toList());
+    }
+
     record OrderToExport(String dateStart, String dateFinal, String type){}
 
     @PostMapping("/exportFile")
     @ResponseBody()
-    public void exportFile(@RequestBody OrderToExport orderToExport){
+    public void exportFile(@RequestBody OrderToExport orderToExport) throws IOException {
         orderService.exportOrders(orderToExport.dateStart, orderToExport.dateFinal, orderToExport.type);
     }
 
@@ -65,6 +85,18 @@ public class OrderController {
         model.addAttribute("statistics", orderService.statisticsOrder());
 
         return "statisticView";
+    }
+
+    @GetMapping("/getPublicStatistics")
+    @ResponseBody()
+    public List getPublicstatistics(@RequestParam(name = "dateStart", required = false, defaultValue = "") String dateStart,
+                                       @RequestParam(name = "dateFinal", required = false, defaultValue = "") String dateFinal){
+        if(dateStart.equals("") || dateFinal.equals("")){
+            return null;
+        }
+        Date startDate = Date.valueOf(dateStart);
+        Date finalDate = Date.valueOf(dateFinal);
+        return orderService.statisticsOrder(startDate, finalDate);
     }
 
 

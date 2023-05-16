@@ -1,56 +1,73 @@
 package com.example.tema2.Model;
 
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 public class ExcelExporter implements Exporter{
     @Override
-    public void export(List list) {
+    public void export(List list) throws IOException {
 
-        try {
+        Workbook workbook = new XSSFWorkbook();
 
-            // Create an instance of the class that exports Excel files, having two sheets
-            ExcelDocument workbook = new ExcelDocument(2);
+        Sheet sheet = workbook.createSheet("Orders");
+        Row header = sheet.createRow(0);
 
-            // Set the sheet names
-            workbook.easy_getSheetAt(0).setSheetName("First tab");
-            workbook.easy_getSheetAt(1).setSheetName("Second tab");
+        CellStyle headerStyle = workbook.createCellStyle();
 
-            // Get the table of data for the first worksheet
-            ExcelTable xlsFirstTable = ((ExcelWorksheet)workbook.easy_getSheetAt(0)).easy_getExcelTable();
-
-            // Add data in cells for report header
-            for (int column=0; column<5; column++)
-            {
-                xlsFirstTable.easy_getCell(0,column).setValue("Column " + (column + 1));
-                xlsFirstTable.easy_getCell(0,column).setDataType(DataType.STRING);
-            }
-
-            // Add data in cells for report values
-            for (int row=0; row<100; row++)
-            {
-                for (int column=0; column<5; column++)
-                {
-                    xlsFirstTable.easy_getCell(row+1,column).setValue("Data " + (row + 1) + ", " + (column + 1));
-                    xlsFirstTable.easy_getCell(row+1,column).setDataType(DataType.STRING);
-                }
-            }
-
-            // Export the XLSX file
-            System.out.println("Writing file: C:\\Samples\\Tutorial04 - export data to Excel.xlsx");
-            workbook.easy_WriteXLSXFile("C:\\Samples\\Tutorial04 - export data to Excel.xlsx");
-
-            // Confirm export of Excel file
-            if (workbook.easy_getError().equals(""))
-                System.out.println("File successfully created.");
-            else
-                System.out.println("Error encountered: " + workbook.easy_getError());
-
-            // Dispose memory
-            workbook.Dispose();
+        XSSFFont font = ((XSSFWorkbook) workbook).createFont();
+        font.setFontName("Arial");
+        headerStyle.setFont(font);
+        Cell headerCell;
+        String[] headerData = {"Id", "List of dishes", "Status", "Cost", "Time", "Date"};
+        int i = 0;
+        for (String data : headerData) {
+            headerCell = header.createCell(i);
+            headerCell.setCellValue(headerData[i]);
+            headerCell.setCellStyle(headerStyle);
+            i++;
         }
-        catch (Exception ex) {
-            ex.printStackTrace();
+        CellStyle style = workbook.createCellStyle();
+
+        i = 1;
+        for (Object order : list) {
+            Row row = sheet.createRow(i);
+            Cell cell = row.createCell(0);
+            cell.setCellValue(((OrderFromMenu) order).getId());
+            cell.setCellStyle(style);
+
+            cell = row.createCell(1);
+            cell.setCellValue(((OrderFromMenu) order).getDishList().toString());
+            cell.setCellStyle(style);
+
+            cell = row.createCell(2);
+            cell.setCellValue(((OrderFromMenu) order).getStatus().toString());
+            cell.setCellStyle(style);
+
+            cell = row.createCell(3);
+            cell.setCellValue(((OrderFromMenu) order).getTotalCost());
+            cell.setCellStyle(style);
+
+            cell = row.createCell(4);
+            cell.setCellValue(((OrderFromMenu) order).getTime().toString());
+            cell.setCellStyle(style);
+
+            cell = row.createCell(5);
+            cell.setCellValue(((OrderFromMenu) order).getDate().toString());
+            cell.setCellStyle(style);
+            i++;
         }
+
+        String fileLocation = "d:\\TEMA2\\raport.xlsx";
+
+        FileOutputStream outputStream = new FileOutputStream(fileLocation);
+        workbook.write(outputStream);
+        workbook.close();
 
     }
 }

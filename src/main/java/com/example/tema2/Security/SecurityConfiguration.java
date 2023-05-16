@@ -37,6 +37,9 @@ public class SecurityConfiguration{
                     .requestMatchers("/addOrder").hasAuthority("user")
                     .requestMatchers("/modifyStatus").hasAuthority("user")
                     .requestMatchers("/exportFile").hasAuthority("admin")
+                    .requestMatchers("/getPublicOrders").permitAll()
+                    .requestMatchers("/addPublicOrder").permitAll()
+                    .requestMatchers("/getPublicStatistics").permitAll()
                     .requestMatchers("/").permitAll()
                     .anyRequest().authenticated();
                 })

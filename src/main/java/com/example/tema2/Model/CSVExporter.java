@@ -17,7 +17,7 @@ public class CSVExporter implements Exporter{
                 .collect(Collectors.toList());
         csvData.add(0, header);
 
-        try (CSVWriter writer = new CSVWriter(new FileWriter("d:\\TEMA2\\test.csv"))) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter("d:\\TEMA2\\raport.csv"))) {
             writer.writeAll(csvData);
         } catch (Exception e) {
             e.printStackTrace();
