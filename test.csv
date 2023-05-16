@@ -1,0 +1,8 @@
+"Id","List of dishes","Status","Cost","Time","Date"
+"1","[ Spaghetti Carbonara,  Chicken Alfredo]","InProgress","27.98","15:45:42","2023-04-09"
+"2","[ Spaghetti Carbonara,  Chicken Alfredo,  Beef Tacos]","InProgress","38.97","15:49:53","2023-04-09"
+"3","[ Spaghetti Carbonara,  Spaghetti Carbonara]","New","25.98","18:53:07","2023-04-09"
+"4","[ Spaghetti Carbonara,  Spaghetti Carbonara,  Chicken Alfredo]","New","40.97","22:51:34","2023-04-09"
+"5","[ Spaghetti Carbonara,  Spaghetti Carbonara,  Grilled Salmon]","New","45.97","22:59:37","2023-04-09"
+"6","[ Spaghetti Carbonara,  Grilled Salmon,  Spaghetti Carbonara,  Spaghetti Carbonara]","New","58.96","23:44:11","2023-04-09"
+"7","[ Chicken Alfredo,  Chicken Alfredo,  Hamburger]","New","40.48","18:40:58","2023-04-29"

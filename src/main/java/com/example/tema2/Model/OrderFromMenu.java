@@ -79,13 +79,11 @@ public class OrderFromMenu {
 
     @Override
     public String toString() {
-        return "OrderFromMenu{" +
-                "id=" + id +
-                ", dishList=" + dishList.toString() +
-                "\nstatus=" + status.toString() +
-                ", totalCost=" + totalCost +
-                ", time=" + time +
-                ", date=" + date +
-                '}' + "\n";
+        return  id +
+                ";" + dishList.toString() +
+                ";" + status.toString() +
+                ";" + totalCost +
+                ";" + time +
+                ";" + date;
     }
 }
