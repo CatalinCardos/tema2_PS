@@ -14,11 +14,11 @@ import java.util.Optional;
 public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
 
     @Autowired
-    private UserService userService;
+    private UserREPO userREPO;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = Optional.ofNullable(userService.findUserByName(username));
+        Optional<User> user = userREPO.findByUsername(username);
 
         user.orElseThrow(() -> new UsernameNotFoundException("Not found: " + username));
 

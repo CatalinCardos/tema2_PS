@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MenuREPO extends JpaRepository<Dish,Integer> {
+    Dish findByName(String name);
 }

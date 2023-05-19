@@ -34,12 +34,6 @@ public class OrderController {
         List<OrderFromMenu> orders = orderService.addOrder(selectedDishes);
 
     }
-    @PostMapping("/addPublicOrder")
-    @ResponseBody()
-    public List<String> addPublicOrder(@RequestBody List<String> selectedDishes){
-        List<String> orderFromMenus=  orderService.addOrder(selectedDishes).stream().map(OrderFromMenu::toString).collect(Collectors.toList());
-        return orderFromMenus;
-    }
 
     @PutMapping("/modifyStatus")
     public void changeStatus(@RequestBody Order order){
@@ -61,15 +55,6 @@ public class OrderController {
         return "raportOrder";
     }
 
-    @GetMapping("/getPublicOrders")
-    @ResponseBody()
-    public List<String> raportOrder(@RequestParam(name = "dateStart", required = false, defaultValue = "") String dateStart,
-                              @RequestParam(name = "dateFinal", required = false, defaultValue = "") String dateFinal){
-        Date startDate = Date.valueOf(dateStart);
-        Date finalDate = Date.valueOf(dateFinal);
-        List <OrderFromMenu> orders = orderService.raportOrder(startDate, finalDate);
-        return orders.stream().map(OrderFromMenu::toString).collect(Collectors.toList());
-    }
 
     record OrderToExport(String dateStart, String dateFinal, String type){}
 
@@ -87,17 +72,7 @@ public class OrderController {
         return "statisticView";
     }
 
-    @GetMapping("/getPublicStatistics")
-    @ResponseBody()
-    public List getPublicstatistics(@RequestParam(name = "dateStart", required = false, defaultValue = "") String dateStart,
-                                       @RequestParam(name = "dateFinal", required = false, defaultValue = "") String dateFinal){
-        if(dateStart.equals("") || dateFinal.equals("")){
-            return null;
-        }
-        Date startDate = Date.valueOf(dateStart);
-        Date finalDate = Date.valueOf(dateFinal);
-        return orderService.statisticsOrder(startDate, finalDate);
-    }
+
 
 
 }

@@ -5,52 +5,141 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" href="button_style.css">
 </head>
+
+<style>
+    body {
+        font-family: Arial;
+        margin: 0;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    img {
+        vertical-align: middle;
+    }
+
+    /* Position the image container (needed to position the left and right arrows) */
+    .container {
+        position: relative;
+
+    }
+
+    /* Hide the images by default */
+    .mySlides {
+        display: none;
+    }
+
+    /* Next & previous buttons */
+    .prev,
+    .next {
+        cursor: pointer;
+        position: absolute;
+        top: 40%;
+        width: auto;
+        padding: 16px;
+        margin-top: -50px;
+        color: white;
+        font-weight: bold;
+        font-size: 20px;
+        border-radius: 0 3px 3px 0;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    /* Position the "next button" to the right */
+    .next {
+        right: 0;
+        border-radius: 3px 0 0 3px;
+    }
+
+    /* On hover, add a black background color with a little bit see-through */
+    .prev:hover,
+    .next:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    /* Number text (1/3 etc) */
+    .numbertext {
+        color: #f2f2f2;
+        font-size: 12px;
+        padding: 8px 12px;
+        position: absolute;
+        top: 0;
+    }
+    .text-input-container{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+</style>
+
 <body style="display: flex; justify-content: center;flex-direction: column; align-items: center; height: 800px; align-items: center;">
     <h1>Modify dish</h1>
     <select style="font-size: 25px" id="dishNameSelected">
         <option th:each="dish : ${dishes}" th:value="${dish.name}" th:text="${dish.name}">Dish</option>
     </select>
-    <button class="my_button" style="margin-top: 10px" onclick="getDish()">Get dish</button>
-    <label style="display: flex; flex-direction: column;">
-        <table style="font-size: 25px">
-            <tr>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Stock</th>
-            </tr>
-            <tr>
-                <td>
-                <input style="margin-top: 10px" id="dishName" type="text" th:placeholder="${dishSelected?.name}" >
-                </td>
-                <td>
-                    <input style="margin-top: 10px" id="dishPrice" type="text" th:placeholder="${dishSelected?.price}">
-                </td>
-                <td>
-                    <input style="margin-top: 10px" id="dishStock" type="text" th:placeholder="${dishSelected?.stock}">
-                </td>
-            </tr>
-        </table>
-    </label>
-    <button class="my_button" style="margin-top: 10px" onclick="modifyDish()">Modify dish</button>
+    <button class="my_button" style="margin-top: 10px; margin-bottom: 10px" onclick="getDish()">Get dish</button>
+    <div class="container">
+        <a class="next" style="display: none" onclick="plusSlides(-1)">❮</a>
+        <a class="prev" style="display: none" onclick="plusSlides(1)">❯</a>
+    </div>
+        <div class="text-input-container">
+
+            <div class="text-container" style="display: flex; flex-direction: column; align-items: center; padding-top: 10px; padding-right: 10px" >
+                <a style="margin-bottom: 15px">Name</a>
+                <a style="margin-bottom: 15px">Price</a>
+                <a style="margin-bottom: 10px">Stock</a>
+            </div>
+            <div class="input-container" style="display: flex; align-items: center; flex-direction: column">
+                <label for="dishName"><input style="margin-top: 10px" id="dishName" type="text" ></label>
+                <label for="dishPrice"><input style="margin-top: 10px" id="dishPrice" type="text" ></label>
+                <label for="dishStock"><input style="margin-top: 10px" id="dishStock" type="text" ></label>
+            </div>
+        </div>
+        <button class="my_button" style="margin-top: 10px" onclick="modifyDish()">Modify dish</button>
+
     <script>
+        let dishSelected;
         function getDish() {
             const dishNameSelected = document.getElementById("dishNameSelected").value;
             if(dishNameSelected === "") {
                 alert("Please fill all the fields!");
                 return;
             }
-            const url = "/modifyDish?name=" + encodeURIComponent(dishNameSelected);
+            const url = "/getBodyDish?name=" + encodeURIComponent(dishNameSelected);
             fetch(url,{
                 method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-            })  .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const newTable = parser.parseFromString(html, 'text/html').querySelector('label');
-                    const oldTable = document.querySelector('label');
-                    oldTable.parentNode.replaceChild(newTable, oldTable);
+            }) .then(response => response.json())
+                .then(data => {
+                    dishSelected = data;
+                    console.log(dishSelected.images);
+                    document.getElementById("dishName").value = dishSelected.name;
+                    document.getElementById("dishPrice").value = dishSelected.price;
+                    document.getElementById("dishStock").value = dishSelected.stock;
+                    let list = dishSelected.images.split(";");
+                    console.log(list);
+                    let container = document.getElementsByClassName("container");
+
+                    for(let i = 0; i < list.length; i++) {
+                        let div = document.createElement("div");
+                        div.className = "mySlides";
+                        let img = document.createElement("img");
+                        img.src = list[i];
+                        img.style.width = "300px";
+                        img.style.height = "250px";
+
+                        div.appendChild(img);
+                        container[0].parentNode.insertBefore(div, container[0]);
+                    }
+                    let prev = document.getElementsByClassName("prev");
+                    let next = document.getElementsByClassName("next");
+                    prev[0].style.display = "block";
+                    next[0].style.display = "block";
+
+                    showSlides(1);
                 });
         }
 
@@ -93,6 +182,29 @@
                 window.location.href = "/admin";
             });
         }
+
+        let slideIndex = 1;
+        showSlides(slideIndex);
+
+        function plusSlides(n) {
+            showSlides(slideIndex += n);
+        }
+
+        function currentSlide(n) {
+            showSlides(slideIndex = n);
+        }
+
+        function showSlides(n) {
+            let i;
+            let slides = document.getElementsByClassName("mySlides");
+            if (n > slides.length) {slideIndex = 1}
+            if (n < 1) {slideIndex = slides.length}
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+            }
+            slides[slideIndex-1].style.display = "block";
+        }
+
     </script>
 </body>
 </html>

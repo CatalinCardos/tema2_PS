@@ -17,6 +17,7 @@ public class Dish {
     private String name;
     private float price;
     private int stock;
+    private String images;
 
     public Dish() {
     }
@@ -65,6 +66,14 @@ public class Dish {
 
     public int getId() {
         return id;
+    }
+
+    public String getImages() {
+        return images;
+    }
+
+    public void setImages(String images) {
+        this.images = images;
     }
 
     @Override

@@ -5,6 +5,51 @@
     <title>Tema2PS</title>
     <link rel="stylesheet" href="button_style.css">
 </head>
+
+<style>
+    output{
+        width: 100%;
+        min-height: 150px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        position: relative;
+        border-radius: 5px;
+    }
+
+    output .image{
+        height: 150px;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        position: relative;
+    }
+
+    output .image img{
+        height: 100%;
+        width: 100%;
+    }
+
+    output .image span {
+        position: absolute;
+        top: -4px;
+        right: 4px;
+        cursor: pointer;
+        font-size: 22px;
+        color: white;
+    }
+
+    output .image span:hover {
+        opacity: 0.8;
+    }
+
+    output .span--hidden{
+        visibility: hidden;
+    }
+
+</style>
+
 <body style="display: flex; justify-content: center; flex-direction: column; height: 800px; align-items: center">
     <h1>Create dish</h1>
         <table style="font-size: 20px">
@@ -20,9 +65,40 @@
                 <td>Quantity</td>
                 <td><input id = "dishQuantity" type="text"/></td>
             </tr>
+            <tr>
+                <input type="file" multiple="multiple" accept="image/jpeg, image/png, image/jpg">
+                <output></output>
+            </tr>
         </table>
+
         <button class="my_button" onclick="addDish()">Add dish</button>
         <script>
+            const output = document.querySelector("output")
+            const input = document.querySelector("input")
+            let imagesArray = []
+
+            input.addEventListener("change", () => {
+                const files = input.files
+                for (let i = 0; i < files.length; i++) {
+                    imagesArray.push(files[i])
+                }
+                displayImages()
+            })
+            function displayImages() {
+                let images = ""
+                imagesArray.forEach((image, index) => {
+                    images += `<div class="image">
+                <img src="${URL.createObjectURL(image)}" alt="image">
+                <span onclick="deleteImage(${index})">&times;</span>
+              </div>`
+                })
+                output.innerHTML = images
+            }
+            function deleteImage(index) {
+                imagesArray.splice(index, 1)
+                displayImages()
+            }
+
             function addDish() {
                 const dishName = document.getElementById("dishName").value;
                 const dishPrice = document.getElementById("dishPrice").value;
@@ -30,8 +106,14 @@
                 const dish = {
                     name: dishName,
                     price: dishPrice,
-                    stock: dishQuantity
+                    stock: dishQuantity,
+                    images: imagesArray
                 };
+
+                if(imagesArray.length === 0) {
+                    alert("Please select at least one image!");
+                    return;
+                }
                 if(dishName === "" || dishPrice === "" || dishQuantity === "") {
                     alert("Please fill all the fields!");
                     return;
@@ -55,6 +137,7 @@
                     window.location.href = "/admin";
                 });
             }
+
         </script>
 </body>
 </html>

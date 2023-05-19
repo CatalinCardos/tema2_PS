@@ -20,6 +20,7 @@ public class MenuService {
 
     }
 
+
     public void updateDish(String name, float price, int stock){
         Dish dish = findDishByName(name);
         dish.setName(name);
@@ -34,7 +35,8 @@ public class MenuService {
 
     public Dish findDishByName(String name){
         System.out.println(name);
-        return menuREPO.findAll().stream().filter(dish -> dish.getName().equals(name)).findFirst().orElse(null);
+        //return menuREPO.findAll().stream().filter(dish -> dish.getName().equals(name)).findFirst().orElse(null);
+        return menuREPO.findByName(name);
     }
 
     public MenuREPO getMenuDAO() {

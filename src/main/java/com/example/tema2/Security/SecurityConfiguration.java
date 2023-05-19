@@ -40,6 +40,7 @@ public class SecurityConfiguration{
                     .requestMatchers("/getPublicOrders").permitAll()
                     .requestMatchers("/addPublicOrder").permitAll()
                     .requestMatchers("/getPublicStatistics").permitAll()
+                    .requestMatchers("/getBodyDish").hasAuthority("admin")
                     .requestMatchers("/").permitAll()
                     .anyRequest().authenticated();
                 })
@@ -47,6 +48,7 @@ public class SecurityConfiguration{
                 .headers(headers -> headers.frameOptions().sameOrigin())
                 .httpBasic(withDefaults())
                 .formLogin(withDefaults())
+                .logout(withDefaults())
                 .csrf().disable()
                 .build();
     }

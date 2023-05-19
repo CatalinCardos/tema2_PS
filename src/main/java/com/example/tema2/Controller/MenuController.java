@@ -2,10 +2,14 @@ package com.example.tema2.Controller;
 
 import com.example.tema2.Model.Dish;
 import com.example.tema2.Service.MenuService;
+import jxl.read.biff.File;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class MenuController {
@@ -29,10 +33,11 @@ public class MenuController {
         return "addDish";
     }
 
-    record DishAux(String name, float price, int stock) {}
+    record DishAux(String name, float price, int stock, List<File> images) {}
     @PostMapping("/addDish")
     public void addDish(@RequestBody DishAux dishAux){
-        menuService.createDish(dishAux.name, dishAux.price, dishAux.stock);
+        System.out.println(dishAux.name() + " " + dishAux.price() + " " + dishAux.stock() + " " + dishAux.images());
+        //menuService.createDish(dishAux.name, dishAux.price, dishAux.stock);
     }
 
     @GetMapping("/deleteDish")
@@ -59,6 +64,15 @@ public class MenuController {
         }
         model.addAttribute("dishSelected", menuService.findDishByName(name));
         return "modifyDish";
+    }
+
+    record DishToSent(String name, float price, int stock, String images) {}
+    @GetMapping("/getBodyDish")
+    @ResponseBody
+    public DishToSent updateDish(@RequestParam(name = "name", required = false, defaultValue = "") String name){
+        Dish dish = menuService.findDishByName(name);
+        DishToSent dishToSent = new DishToSent(dish.getName(), dish.getPrice(), dish.getStock(), dish.getImages());
+        return dishToSent;
     }
 
     @PutMapping("/modifyDish")
