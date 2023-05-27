@@ -19,19 +19,15 @@
     img {
         vertical-align: middle;
     }
-
-    /* Position the image container (needed to position the left and right arrows) */
     .container {
         position: relative;
 
     }
 
-    /* Hide the images by default */
     .mySlides {
         display: none;
     }
 
-    /* Next & previous buttons */
     .prev,
     .next {
         cursor: pointer;
@@ -48,30 +44,61 @@
         -webkit-user-select: none;
     }
 
-    /* Position the "next button" to the right */
     .next {
         right: 0;
         border-radius: 3px 0 0 3px;
     }
 
-    /* On hover, add a black background color with a little bit see-through */
     .prev:hover,
     .next:hover {
         background-color: rgba(0, 0, 0, 0.8);
     }
 
-    /* Number text (1/3 etc) */
-    .numbertext {
-        color: #f2f2f2;
-        font-size: 12px;
-        padding: 8px 12px;
-        position: absolute;
-        top: 0;
-    }
     .text-input-container{
         display: flex;
         flex-direction: row;
         justify-content: center;
+    }
+
+    output{
+        width: 100%;
+        min-height: 150px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        position: relative;
+        border-radius: 5px;
+    }
+
+    output .image{
+        height: 150px;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        position: relative;
+    }
+
+    output .image img{
+        height: 100%;
+        width: 100%;
+    }
+
+    output .image span {
+        position: absolute;
+        top: -4px;
+        right: 4px;
+        cursor: pointer;
+        font-size: 22px;
+        color: white;
+    }
+
+    output .image span:hover {
+        opacity: 0.8;
+    }
+
+    output .span--hidden{
+        visibility: hidden;
     }
 
 </style>
@@ -92,17 +119,49 @@
                 <a style="margin-bottom: 15px">Name</a>
                 <a style="margin-bottom: 15px">Price</a>
                 <a style="margin-bottom: 10px">Stock</a>
+                <a style="margin-bottom: 10px">Images</a>
             </div>
             <div class="input-container" style="display: flex; align-items: center; flex-direction: column">
                 <label for="dishName"><input style="margin-top: 10px" id="dishName" type="text" ></label>
                 <label for="dishPrice"><input style="margin-top: 10px" id="dishPrice" type="text" ></label>
                 <label for="dishStock"><input style="margin-top: 10px" id="dishStock" type="text" ></label>
+                <input style="margin-top: 10px" type="file" multiple="multiple" enctype="multipart/form-data" accept="image/jpeg, image/png, image/jpg">
             </div>
         </div>
+    <output></output>
         <button class="my_button" style="margin-top: 10px" onclick="modifyDish()">Modify dish</button>
 
     <script>
         let dishSelected;
+        const output = document.querySelector("output")
+        const input = document.querySelector("input[type=file]")
+
+
+        let imagesArray = []
+
+        input.addEventListener("change", () => {
+            const files = input.files
+            for (let i = 0; i < files.length; i++) {
+                imagesArray.push(files[i])
+            }
+            console.log(imagesArray)
+            displayImages()
+        })
+        function displayImages() {
+            let images = ""
+            imagesArray.forEach((image, index) => {
+                images += `<div class="image">
+                <img src="${URL.createObjectURL(image)}" alt="image">
+                <span onclick="deleteImage(${index})">&times;</span>
+              </div>`
+            })
+            output.innerHTML = images
+        }
+        function deleteImage(index) {
+            imagesArray.splice(index, 1)
+            displayImages()
+        }
+
         function getDish() {
             const dishNameSelected = document.getElementById("dishNameSelected").value;
             if(dishNameSelected === "") {
@@ -115,19 +174,21 @@
             }) .then(response => response.json())
                 .then(data => {
                     dishSelected = data;
-                    console.log(dishSelected.images);
                     document.getElementById("dishName").value = dishSelected.name;
                     document.getElementById("dishPrice").value = dishSelected.price;
                     document.getElementById("dishStock").value = dishSelected.stock;
-                    let list = dishSelected.images.split(";");
-                    console.log(list);
+                    if(dishSelected.images.length === 0) {
+                        alert("This dish has no images!");
+                        return;
+                    }
+                    let list = dishSelected.images
                     let container = document.getElementsByClassName("container");
 
                     for(let i = 0; i < list.length; i++) {
                         let div = document.createElement("div");
                         div.className = "mySlides";
                         let img = document.createElement("img");
-                        img.src = list[i];
+                        img.src = '/images/' + list[i].name;
                         img.style.width = "300px";
                         img.style.height = "250px";
 
@@ -147,7 +208,6 @@
             let dishName = document.getElementById("dishName").value;
             let dishPrice = document.getElementById("dishPrice").value;
             let dishStock = document.getElementById("dishStock").value;
-            //put placeholder if input is empty
             if(dishName === "") {
                 dishName = document.getElementById("dishName").placeholder;
             }
@@ -157,29 +217,31 @@
             if(dishStock === "") {
                 dishStock = document.getElementById("dishStock").placeholder;
             }
-            //check dish price is a number
             if(isNaN(dishPrice)) {
                 alert("Dish price must be a number!");
                 return;
             }
-            //check dish stock is a number
             if(isNaN(dishStock)) {
                 alert("Dish stock must be a number!");
                 return;
             }
+
+            const formData = new FormData();
+            formData.append("name", dishName);
+            formData.append("price", dishPrice);
+            formData.append("stock", dishStock);
+            for (let i = 0; i < imagesArray.length; i++) {
+                formData.append("images", imagesArray[i]);
+            }
+            if(imagesArray.length === 0) {
+                formData.append("images", "");
+            }
             fetch("/modifyDish",{
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name: dishName,
-                    price: dishPrice,
-                    stock: dishStock
-                })
+                body: formData
             })  .then(function() {
-                alert("Dish modified successfully!");
-                window.location.href = "/admin";
+                    alert("Dish modified successfully!");
+                    window.location.href = "/admin";
             });
         }
 
@@ -188,10 +250,6 @@
 
         function plusSlides(n) {
             showSlides(slideIndex += n);
-        }
-
-        function currentSlide(n) {
-            showSlides(slideIndex = n);
         }
 
         function showSlides(n) {

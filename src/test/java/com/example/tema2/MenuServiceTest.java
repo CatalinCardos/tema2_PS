@@ -36,14 +36,14 @@ public class MenuServiceTest {
 
     @Before
     public void setUp() {
-        Dish dish = new Dish("Pizza", 20, 10);
+        Dish dish = new Dish("Pizza", 20, 10, null);
 
         Mockito.when(menuRepository.findByName(dish.getName()))
           .thenReturn(dish);
     }
 
     @Test
-    public void whenValidName_thenEmployeeShouldBeFound() {
+    public void whenValidName_thenDishShouldBeFound() {
         String name = "Pizza";
         Dish found = menuService.findDishByName(name);
 
@@ -52,7 +52,7 @@ public class MenuServiceTest {
     }
 
     @Test
-    public void whenValidName_thenEmployeeShouldBeFound2() {
+    public void whenValidName_thenDishShouldBeFound2() {
         String name = "Pizza";
         Dish found = menuService.findDishByName(name);
 
@@ -61,7 +61,7 @@ public class MenuServiceTest {
     }
 
     @Test
-    public void whenValidName_thenEmployeeShouldBeFound3() {
+    public void whenValidName_thenDishShouldBeFound3() {
         String name = "Pizza";
         Dish found = menuService.findDishByName(name);
 

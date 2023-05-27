@@ -66,7 +66,7 @@
                 <td><input id = "dishQuantity" type="text"/></td>
             </tr>
             <tr>
-                <input type="file" multiple="multiple" accept="image/jpeg, image/png, image/jpg">
+                <input type="file" multiple="multiple" enctype="multipart/form-data" accept="image/jpeg, image/png, image/jpg">
                 <output></output>
             </tr>
         </table>
@@ -99,42 +99,48 @@
                 displayImages()
             }
 
-            function addDish() {
+
+            async function addDish() {
                 const dishName = document.getElementById("dishName").value;
                 const dishPrice = document.getElementById("dishPrice").value;
                 const dishQuantity = document.getElementById("dishQuantity").value;
-                const dish = {
-                    name: dishName,
-                    price: dishPrice,
-                    stock: dishQuantity,
-                    images: imagesArray
-                };
 
-                if(imagesArray.length === 0) {
+                if (imagesArray.length === 0) {
                     alert("Please select at least one image!");
                     return;
                 }
-                if(dishName === "" || dishPrice === "" || dishQuantity === "") {
+                if (dishName === "" || dishPrice === "" || dishQuantity === "") {
                     alert("Please fill all the fields!");
                     return;
                 }
-                if(isNaN(dishPrice)) {
+                if (isNaN(dishPrice)) {
                     alert("Price must be a number!");
                     return;
                 }
-                if(isNaN(dishQuantity)) {
+                if (isNaN(dishQuantity)) {
                     alert("Quantity must be a number!");
                     return;
                 }
+                const formData = new FormData();
+                formData.append("name", dishName);
+                formData.append("price", dishPrice);
+                formData.append("stock", dishQuantity);
+                for (let i = 0; i < imagesArray.length; i++) {
+                    formData.append("images", imagesArray[i]);
+                }
+                imagesArray = [];
+
                 fetch("/addDish", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(dish)
-                }).then(function() {
-                    alert("Dish added successfully!");
-                    window.location.href = "/admin";
+                    body: formData
+                }).then(function () {
+                    if(this.status === 200) {
+                        alert("Dish added successfully!");
+                        window.location.href = "/admin";
+                    }
+                    else {
+                        alert("Something went wrong!");
+                    }
                 });
             }
 

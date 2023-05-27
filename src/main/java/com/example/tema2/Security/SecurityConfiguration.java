@@ -41,6 +41,7 @@ public class SecurityConfiguration{
                     .requestMatchers("/addPublicOrder").permitAll()
                     .requestMatchers("/getPublicStatistics").permitAll()
                     .requestMatchers("/getBodyDish").hasAuthority("admin")
+                    .requestMatchers("/images").hasAuthority("admin")
                     .requestMatchers("/").permitAll()
                     .anyRequest().authenticated();
                 })

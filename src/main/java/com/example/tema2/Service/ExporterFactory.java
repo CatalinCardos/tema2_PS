@@ -1,8 +1,8 @@
-package com.example.tema2.Utils;
+package com.example.tema2.Service;
 
-import com.example.tema2.Model.CSVExporter;
-import com.example.tema2.Model.ExcelExporter;
-import com.example.tema2.Model.Exporter;
+import com.example.tema2.Service.CSVExporter;
+import com.example.tema2.Service.ExcelExporter;
+import com.example.tema2.Service.Exporter;
 
 public class ExporterFactory {
     public static Exporter getExporter(String type){

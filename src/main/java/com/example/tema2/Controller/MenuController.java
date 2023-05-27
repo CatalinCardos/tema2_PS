@@ -1,13 +1,25 @@
 package com.example.tema2.Controller;
 
 import com.example.tema2.Model.Dish;
+import com.example.tema2.Model.Image;
+import com.example.tema2.Service.ImageService;
 import com.example.tema2.Service.MenuService;
-import jxl.read.biff.File;
+import org.hibernate.engine.jdbc.BlobProxy;
+import org.hibernate.type.descriptor.java.BlobJavaType;
+import org.hibernate.type.descriptor.jdbc.BlobJdbcType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+
+import javax.sql.rowset.serial.SerialBlob;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +27,9 @@ import java.util.List;
 public class MenuController {
     @Autowired
     private MenuService menuService;
+
+    @Autowired
+    private ImageService imageService;
 
     @GetMapping("/admin")
     public String adminPage(Model model){
@@ -33,12 +48,19 @@ public class MenuController {
         return "addDish";
     }
 
-    record DishAux(String name, float price, int stock, List<File> images) {}
+    record DishAux(String name, float price, int stock) {}
+
     @PostMapping("/addDish")
-    public void addDish(@RequestBody DishAux dishAux){
-        System.out.println(dishAux.name() + " " + dishAux.price() + " " + dishAux.stock() + " " + dishAux.images());
-        //menuService.createDish(dishAux.name, dishAux.price, dishAux.stock);
+    public void addDish(@RequestPart("images") MultipartFile[] images, @RequestParam("name") String name, @RequestParam("price") float price, @RequestParam("stock") int stock) {
+        Dish dish = menuService.createDish(name, price, stock);
+        try {
+            imageService.saveImages(dish, images);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
+
 
     @GetMapping("/deleteDish")
     public String deleteDish(Model model){
@@ -51,7 +73,9 @@ public class MenuController {
     public void deleteDish(@RequestBody String dishName){
         dishName = dishName.substring(1, dishName.length()-1); // remove the "" from the string (from the JSON
         String finalName = dishName;
-        menuService.deleteDish(finalName);
+        Dish dish = menuService.findDishByName(finalName);
+        imageService.deleteImages(dish);
+        menuService.deleteDish(dish);
     }
 
     @GetMapping("/modifyDish")
@@ -66,18 +90,23 @@ public class MenuController {
         return "modifyDish";
     }
 
-    record DishToSent(String name, float price, int stock, String images) {}
+
+    record DishToUpdate(String name, float price, int stock, List<Image> images) {}
     @GetMapping("/getBodyDish")
     @ResponseBody
-    public DishToSent updateDish(@RequestParam(name = "name", required = false, defaultValue = "") String name){
-        Dish dish = menuService.findDishByName(name);
-        DishToSent dishToSent = new DishToSent(dish.getName(), dish.getPrice(), dish.getStock(), dish.getImages());
-        return dishToSent;
+    public DishToUpdate updateDish(@RequestParam(name = "name", required = false, defaultValue = "") String name){
+        return new DishToUpdate(name, menuService.findDishByName(name).getPrice(), menuService.findDishByName(name).getStock(), menuService.findDishByName(name).getImages());
     }
 
     @PutMapping("/modifyDish")
-    public void updateDish(@RequestBody DishAux dish){
-        menuService.updateDish(dish.name(), dish.price(), dish.stock());
+    public void updateDish(@RequestPart(value = "images", required = false) MultipartFile[] images, @RequestParam("name") String name, @RequestParam("price") float price, @RequestParam("stock") int stock) {
+        try {
+            if(images != null)
+            imageService.saveImages(menuService.findDishByName(name), images);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        menuService.updateDish(name, price, stock, images);
     }
 
 }

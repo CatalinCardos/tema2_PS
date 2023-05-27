@@ -1,4 +1,4 @@
-package com.example.tema2.Model;
+package com.example.tema2.Service;
 
 import com.opencsv.CSVWriter;
 

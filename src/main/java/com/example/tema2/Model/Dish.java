@@ -1,7 +1,11 @@
 package com.example.tema2.Model;
 
 import jakarta.persistence.*;
+import org.apache.poi.hpsf.Blob;
 
+import java.awt.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,15 +21,18 @@ public class Dish {
     private String name;
     private float price;
     private int stock;
-    private String images;
+
+    @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL)
+    private List<Image> images;
 
     public Dish() {
     }
 
-    public Dish(String name, float price, int stock) {
+    public Dish(String name, float price, int stock, List<Image> images) {
         this.name = name;
         this.price = price;
         this.stock = stock;
+        this.images = images;
     }
 
     public void setId(int id) {
@@ -68,11 +75,11 @@ public class Dish {
         return id;
     }
 
-    public String getImages() {
+    public List<Image> getImages() {
         return images;
     }
 
-    public void setImages(String images) {
+    public void setImages(List<Image> images) {
         this.images = images;
     }
 
