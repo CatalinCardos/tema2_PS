@@ -172,19 +172,27 @@
             fetch(url,{
                 method: "GET",
             }) .then(response => response.json())
-                .then(data => {
+                .then(async data => {
                     dishSelected = data;
                     document.getElementById("dishName").value = dishSelected.name;
                     document.getElementById("dishPrice").value = dishSelected.price;
                     document.getElementById("dishStock").value = dishSelected.stock;
-                    if(dishSelected.images.length === 0) {
+                    if (dishSelected.images.length === 0) {
                         alert("This dish has no images!");
                         return;
                     }
+
+                    //remove all slides
+                    let slides = document.getElementsByClassName("mySlides");
+                    console.log(slides.length);
+                    while (slides.length > 0) {
+                        slides[0].parentNode.removeChild(slides[0]);
+                    }
+                    slideIndex = 1;
+                    console.log(slides.length);
                     let list = dishSelected.images
                     let container = document.getElementsByClassName("container");
-
-                    for(let i = 0; i < list.length; i++) {
+                    for (let i = 0; i < list.length; i++) {
                         let div = document.createElement("div");
                         div.className = "mySlides";
                         let img = document.createElement("img");
@@ -260,8 +268,18 @@
             for (i = 0; i < slides.length; i++) {
                 slides[i].style.display = "none";
             }
-            slides[slideIndex-1].style.display = "block";
-        }
+            // Check if slides array exists and has elements
+            if (slides && slides.length > 0) {
+                // Check if slideIndex is within valid range
+                if (slideIndex > 0 && slideIndex <= slides.length) {
+                    // Set the display property of the element at slideIndex-1 to "block"
+                    slides[slideIndex - 1].style.display = "block";
+                } else {
+                    console.log("Invalid slideIndex");
+                }
+            } else {
+                console.log("Slides array is not defined or empty");
+            }        }
 
     </script>
 </body>
